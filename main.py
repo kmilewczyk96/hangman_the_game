@@ -37,16 +37,16 @@ def main_menu():
                              int(HEIGHT / 2 + FONT_SIZE_2 / 2)))
 
         if status == 0:
-            pygame.draw.rect(win, BLACK, ((int(WIDTH/2) - int(play_text.get_width() / 2)),
-                                          int(HEIGHT/2 - FONT_SIZE_2)
-                                          , play_text.get_width(),
-                                          FONT_SIZE_2), 3)
+            pygame.draw.line(win, BLACK,
+                             (int(WIDTH/2) - int(play_text.get_width()/2), int(HEIGHT/2)),
+                             (int(WIDTH/2) + int(play_text.get_width()/2), int(HEIGHT/2)),
+                             int(FONT_SIZE_2 / 10))
 
         else:
-            pygame.draw.rect(win, BLACK, ((int(WIDTH/2) - int(quit_text.get_width() / 2)),
-                                          int(HEIGHT/2 + FONT_SIZE_2/2),
-                                          quit_text.get_width(),
-                                          FONT_SIZE_2), 3)
+            pygame.draw.line(win, BLACK,
+                             (int(WIDTH/2) - int(quit_text.get_width()/2), int(HEIGHT/2) + int(FONT_SIZE_2 * 5/3)),
+                             (int(WIDTH/2) + int(quit_text.get_width()/2), int(HEIGHT/2) + int(FONT_SIZE_2 * 5/3)),
+                             int(FONT_SIZE_2 / 10))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
