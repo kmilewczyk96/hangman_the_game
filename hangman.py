@@ -11,10 +11,6 @@ class Hangman:
         self.chances = chance
         self.picked_word = ['_' for i in self.random_word]
 
-    def play(self):
+    def play(self, win):
         pass
 
-
-word1 = WordsFromFile()
-chance1 = GameLevel(Chance).get_level_chances()
-Hangman(word1, chance1).play()

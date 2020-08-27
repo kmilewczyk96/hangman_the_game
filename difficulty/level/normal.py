@@ -7,4 +7,4 @@ class Normal(AbstractLevel):
 
     @staticmethod
     def get_name():
-        return 'Normal'
+        return 'NORMAL'

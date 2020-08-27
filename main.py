@@ -1,7 +1,13 @@
 import pygame
-pygame.init()
 
-# keep this aspect ratio (16:9/ 16:10)
+from hangman import Hangman
+pygame.init()
+from chance import Chance
+from difficulty.game_level import GameLevel
+from word.words import WordsFromFile
+
+
+# keep this aspect ratio (16:9 / 16:10)
 WIDTH, HEIGHT = (1280, 720)
 win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('H A N _ _ A N')
@@ -9,7 +15,6 @@ pygame.display.set_caption('H A N _ _ A N')
 # time
 FPS = 60
 clock = pygame.time.Clock()
-status = 0
 
 # colours and fonts:
 WHITE = (243, 243, 243)
@@ -23,7 +28,7 @@ LETTER_FONT_2 = pygame.font.SysFont('monospace', FONT_SIZE_2, bold=True)
 
 
 def main_menu():
-    global status
+    status = 0
     run_menu = True
     while run_menu:
         clock.tick(FPS)
@@ -65,32 +70,16 @@ def main_menu():
 
                 if event.key == pygame.K_RETURN:
                     if status == 0:
-                        play()
+                        word1 = WordsFromFile()
+                        chance1 = GameLevel(Chance).get_level_chances(win)
+                        Hangman(word1, chance1).play(win)
+                        run_menu = False
                     if status == 1:
-                        quit()
+                        run_menu = False
 
         pygame.display.update()
 
 
-def play():
-    run_play = True
-    while run_play:
-        win.fill(BLACK)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quit()
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    main_menu()
-
-        pygame.display.update()
-
-
-run = True
-while run:
-    main_menu()
-    run = False
-
-
+main_menu()
 pygame.quit()
+
