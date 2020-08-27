@@ -2,7 +2,7 @@ import pygame
 
 
 class GlobalStyleClass:
-    def __init__(self, width=500, height=500):
+    def __init__(self, width=1280, height=720):
         self.width = width
         self.height = height
         self.WHITE = (243, 243, 243)
