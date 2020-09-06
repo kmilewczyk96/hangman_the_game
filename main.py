@@ -3,6 +3,7 @@ from chance import Chance
 from difficulty.game_level import GameLevel
 from word.words import WordsFromFile
 from hangman import Hangman
+from menus.two_way_menu import TwoWayMenu
 
 pygame.init()
 
@@ -27,57 +28,6 @@ LETTER_FONT_1 = pygame.font.SysFont('monospace', FONT_SIZE_1, bold=True)
 LETTER_FONT_2 = pygame.font.SysFont('monospace', FONT_SIZE_2, bold=True)
 
 
-def quit_prompt():
-    status = 0
-    run_prompt = True
-    while run_prompt:
-        clock.tick(FPS)
-        win.fill(WHITE)
-
-        yes = LETTER_FONT_2.render('YES', 1, BLACK)
-        no = LETTER_FONT_2.render('NO', 1, BLACK)
-
-        win.blit(yes, (int(WIDTH / 2) - int(yes.get_width() / 2),
-                       int(HEIGHT / 2 - FONT_SIZE_2)))
-        win.blit(no, (int(WIDTH / 2) - int(no.get_width() / 2),
-                      int(HEIGHT / 2 + FONT_SIZE_2 / 2)))
-
-        if status == 0:
-            pygame.draw.line(win, BLACK,
-                             (int(WIDTH / 2) - int(yes.get_width() / 2), int(HEIGHT / 2)),
-                             (int(WIDTH / 2) + int(yes.get_width() / 2), int(HEIGHT / 2)),
-                             int(FONT_SIZE_2 / 10))
-
-        else:
-            pygame.draw.line(win, BLACK,
-                             (int(WIDTH / 2) - int(no.get_width() / 2),
-                              int(HEIGHT / 2) + int(FONT_SIZE_2 * 5 / 3)),
-                             (int(WIDTH / 2) + int(no.get_width() / 2),
-                              int(HEIGHT / 2) + int(FONT_SIZE_2 * 5 / 3)),
-                             int(FONT_SIZE_2 / 10))
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quit()
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_DOWN:
-                    if status == 0:
-                        status = 1
-                    print(status)
-
-                if event.key == pygame.K_UP:
-                    if status == 1:
-                        status = 0
-                    print(status)
-
-                if event.key == pygame.K_RETURN:
-                    if status == 0:
-                        quit()
-                    if status == 1:
-                        run_prompt = False
-
-        pygame.display.update()
 
 
 def main_menu():
@@ -126,7 +76,8 @@ def main_menu():
                         game_level_menu()
                         run_menu = False
                     if status == 1:
-                        quit_prompt()
+                        quit_prompt = TwoWayMenu('ARE YOU SURE?', 'YES', 'NO', quit, main_menu)
+                        quit_prompt.prompt(WIDTH, HEIGHT, WHITE, BLACK, LETTER_FONT_2, FONT_SIZE_2, win)
 
         pygame.display.update()
 
