@@ -1,6 +1,4 @@
-import pygame
 from difficulty.level import *
-from global_style import GlobalStyleClass
 
 
 class GameLevel:

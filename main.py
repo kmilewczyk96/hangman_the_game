@@ -21,14 +21,63 @@ WHITE = (243, 243, 243)
 GREEN_TABLE = (51, 67, 42)
 BLACK = (5, 5, 5)
 
-FONT_SIZE_1 = round(WIDTH / 32)
+FONT_SIZE_1 = round(WIDTH / 28)
 FONT_SIZE_2 = round(WIDTH / 15)
 LETTER_FONT_1 = pygame.font.SysFont('monospace', FONT_SIZE_1, bold=True)
 LETTER_FONT_2 = pygame.font.SysFont('monospace', FONT_SIZE_2, bold=True)
 
 
 def quit_prompt():
-    pass
+    status = 0
+    run_prompt = True
+    while run_prompt:
+        clock.tick(FPS)
+        win.fill(WHITE)
+
+        yes = LETTER_FONT_2.render('YES', 1, BLACK)
+        no = LETTER_FONT_2.render('NO', 1, BLACK)
+
+        win.blit(yes, (int(WIDTH / 2) - int(yes.get_width() / 2),
+                       int(HEIGHT / 2 - FONT_SIZE_2)))
+        win.blit(no, (int(WIDTH / 2) - int(no.get_width() / 2),
+                      int(HEIGHT / 2 + FONT_SIZE_2 / 2)))
+
+        if status == 0:
+            pygame.draw.line(win, BLACK,
+                             (int(WIDTH / 2) - int(yes.get_width() / 2), int(HEIGHT / 2)),
+                             (int(WIDTH / 2) + int(yes.get_width() / 2), int(HEIGHT / 2)),
+                             int(FONT_SIZE_2 / 10))
+
+        else:
+            pygame.draw.line(win, BLACK,
+                             (int(WIDTH / 2) - int(no.get_width() / 2),
+                              int(HEIGHT / 2) + int(FONT_SIZE_2 * 5 / 3)),
+                             (int(WIDTH / 2) + int(no.get_width() / 2),
+                              int(HEIGHT / 2) + int(FONT_SIZE_2 * 5 / 3)),
+                             int(FONT_SIZE_2 / 10))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_DOWN:
+                    if status == 0:
+                        status = 1
+                    print(status)
+
+                if event.key == pygame.K_UP:
+                    if status == 1:
+                        status = 0
+                    print(status)
+
+                if event.key == pygame.K_RETURN:
+                    if status == 0:
+                        quit()
+                    if status == 1:
+                        run_prompt = False
+
+        pygame.display.update()
 
 
 def main_menu():
@@ -77,7 +126,7 @@ def main_menu():
                         game_level_menu()
                         run_menu = False
                     if status == 1:
-                        run_menu = False
+                        quit_prompt()
 
         pygame.display.update()
 
@@ -144,13 +193,15 @@ def game(chance):
         clock.tick(FPS)
         win.fill(WHITE)
 
+        chances_left = LETTER_FONT_1.render(f'Lives:{hangman.chances.get_chances()}', 1, BLACK)
+        win.blit(chances_left, (int(FONT_SIZE_1), int(FONT_SIZE_1)))
+
         word_to_guess = LETTER_FONT_1.render(f"{' '.join(hangman.word_to_guess)}", 1, BLACK)
         win.blit(word_to_guess, (int(WIDTH / 2) - int(word_to_guess.get_width() / 2),
                                  int(HEIGHT / 2) - int(FONT_SIZE_2)))
 
-        chances_left = LETTER_FONT_1.render(f'Lives:{hangman.chances.get_chances()}', 1, BLACK)
-        win.blit(chances_left, (int(FONT_SIZE_1), int(FONT_SIZE_1)))
-
+        used_letters = LETTER_FONT_1.render(f"Used letters: {', '.join(hangman.used_letters)}", 1, BLACK)
+        win.blit(used_letters, (int(FONT_SIZE_1), int(HEIGHT) - int(FONT_SIZE_2) * 3))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -166,9 +217,8 @@ def game(chance):
                     hangman.check(letter)
                     print(letter)
 
-
         pygame.display.update()
+
 
 main_menu()
 pygame.quit()
-

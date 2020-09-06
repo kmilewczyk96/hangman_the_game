@@ -1,5 +1,5 @@
 import pygame
-from chance import Chance
+from chance import Chance, ChancesError
 from difficulty.game_level import GameLevel
 from word.words import WordsFromFile
 
@@ -9,6 +9,7 @@ class Hangman:
         self.alphabet = [i for i in range(97, 123)]
         self.random_word = word.get_random_word().upper()
         self.word_to_guess = ['_' for i in self.random_word]
+        self.used_letters = []
         self.chances = chance
 
     def check(self, letter):
@@ -21,6 +22,22 @@ class Hangman:
                 self.word_to_guess[letter_index] = letter
 
         else:
-            self.chances.decrease_chances()
-            print(self.chances.get_chances())
+            try:
+                self.chances.decrease_chances()
+                if letter not in self.used_letters:
+                    self.used_letters += letter
+                print(self.used_letters)
 
+            except ChancesError:
+                self.loose()
+
+
+
+
+
+
+    def win(self):
+        pass
+
+    def loose(self):
+        pass
