@@ -8,9 +8,10 @@ from menus.two_way_menu import TwoWayMenu
 pygame.init()
 
 
-# keep this aspect ratio (16:9 / 16:10)
-WIDTH, HEIGHT = (1280, 720)
-win = pygame.display.set_mode((WIDTH, HEIGHT))
+# keep this aspect ratio (16:9 / 16:10), with max resolution of 1920 x 1080
+WIDTH, HEIGHT = (1920, 1080)
+win = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
+pygame.mouse.set_visible(False)
 pygame.display.set_caption('H A N _ _ A N')
 
 # time
@@ -18,95 +19,52 @@ FPS = 60
 clock = pygame.time.Clock()
 
 # colours and fonts:
-WHITE = (243, 243, 243)
+WHITE = (227, 227, 227)
 GREEN_TABLE = (51, 67, 42)
-BLACK = (5, 5, 5)
+BACKGROUND = pygame.image.load("chalkboard.jpg").convert()
 
+FONT_SIZE_0 = round(WIDTH / 40)
 FONT_SIZE_1 = round(WIDTH / 28)
 FONT_SIZE_2 = round(WIDTH / 15)
-LETTER_FONT_1 = pygame.font.SysFont('monospace', FONT_SIZE_1, bold=True)
-LETTER_FONT_2 = pygame.font.SysFont('monospace', FONT_SIZE_2, bold=True)
+LETTER_FONT_0 = pygame.font.SysFont('monospace', FONT_SIZE_0, bold=False)
+LETTER_FONT_1 = pygame.font.SysFont('monospace', FONT_SIZE_1, bold=False)
+LETTER_FONT_2 = pygame.font.SysFont('monospace', FONT_SIZE_2, bold=False)
 
 
+def quit_prompt():
+    menu = TwoWayMenu('ARE YOU SURE?', 'YES', 'NO', quit, main_menu)
+    menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, LETTER_FONT_2, FONT_SIZE_2, win)
 
 
 def main_menu():
-    status = 0
-    run_menu = True
-    while run_menu:
-        clock.tick(FPS)
-        win.fill(WHITE)
-        play_text = LETTER_FONT_2.render('PLAY', 1, BLACK)
-        quit_text = LETTER_FONT_2.render('QUIT', 1, BLACK)
-
-        win.blit(play_text, (int(WIDTH/2) - int(play_text.get_width() / 2),
-                             int(HEIGHT/2 - FONT_SIZE_2)))
-        win.blit(quit_text, (int(WIDTH / 2) - int(quit_text.get_width() / 2),
-                             int(HEIGHT / 2 + FONT_SIZE_2 / 2)))
-
-        if status == 0:
-            pygame.draw.line(win, BLACK,
-                             (int(WIDTH/2) - int(play_text.get_width()/2), int(HEIGHT/2)),
-                             (int(WIDTH/2) + int(play_text.get_width()/2), int(HEIGHT/2)),
-                             int(FONT_SIZE_2 / 10))
-
-        else:
-            pygame.draw.line(win, BLACK,
-                             (int(WIDTH/2) - int(quit_text.get_width()/2), int(HEIGHT/2) + int(FONT_SIZE_2 * 5/3)),
-                             (int(WIDTH/2) + int(quit_text.get_width()/2), int(HEIGHT/2) + int(FONT_SIZE_2 * 5/3)),
-                             int(FONT_SIZE_2 / 10))
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quit()
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_DOWN:
-                    if status == 0:
-                        status = 1
-                    print(status)
-
-                if event.key == pygame.K_UP:
-                    if status == 1:
-                        status = 0
-                    print(status)
-
-                if event.key == pygame.K_RETURN:
-                    if status == 0:
-                        game_level_menu()
-                        run_menu = False
-                    if status == 1:
-                        quit_prompt = TwoWayMenu('ARE YOU SURE?', 'YES', 'NO', quit, main_menu)
-                        quit_prompt.prompt(WIDTH, HEIGHT, WHITE, BLACK, LETTER_FONT_2, FONT_SIZE_2, win)
-
-        pygame.display.update()
+    menu = TwoWayMenu('< H A N G M A N >', 'PLAY', 'QUIT', game_level_menu, quit_prompt)
+    menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, LETTER_FONT_2, FONT_SIZE_2, win)
 
 
 def game_level_menu():
     game_level = GameLevel(Chance)
     level_status = 0
     max_level_status = game_level.game_level_count - 1
-
     run_game_level = True
     while run_game_level:
         clock.tick(FPS)
-        win.fill(WHITE)
+        win.blit(BACKGROUND, (0, 0))
 
-        diff_text = LETTER_FONT_2.render('CHOOSE DIFFICULTY:', 1, BLACK)
+        diff_text = LETTER_FONT_2.render('<CHOOSE DIFFICULTY>', 1, WHITE)
         win.blit(diff_text, (int(WIDTH / 2) - int(diff_text.get_width() / 2),
                              int(FONT_SIZE_2)))
 
         for i in range(max_level_status + 1):
-            lvl_text = LETTER_FONT_2.render(game_level.game_level_list[i].get_name(), 1, BLACK)
+            lvl_text = LETTER_FONT_2.render(game_level.game_level_list[i].get_name(), 1, WHITE)
             win.blit(lvl_text, (int(WIDTH / 2) - int(lvl_text.get_width() / 2),
                                 int(FONT_SIZE_2) * (i + 3)))
 
-        lvl2_text = LETTER_FONT_2.render(game_level.game_level_list[level_status].get_name(), 1, BLACK)
-        pygame.draw.line(win, BLACK,
+        lvl2_text = LETTER_FONT_2.render(game_level.game_level_list[level_status].get_name(), 1, WHITE)
+        pygame.draw.line(win, WHITE,
                          (int(WIDTH / 2) - int(lvl2_text.get_width() / 2),
                           int(FONT_SIZE_2) * (level_status + 4)),
                          (int(WIDTH / 2) + int(lvl2_text.get_width() / 2),
-                          int(FONT_SIZE_2) * (level_status + 4)), int(FONT_SIZE_2 / 10))
+                          int(FONT_SIZE_2) * (level_status + 4)), int(FONT_SIZE_2 / 20))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -138,21 +96,40 @@ def game_level_menu():
 def game(chance):
     word = WordsFromFile()
     hangman = Hangman(word, chance)
-
     run_game = True
     while run_game:
         clock.tick(FPS)
-        win.fill(WHITE)
+        win.blit(BACKGROUND, (0, 0))
 
-        chances_left = LETTER_FONT_1.render(f'Lives:{hangman.chances.get_chances()}', 1, BLACK)
+        pygame.draw.line(win, WHITE,
+                         (0, int(HEIGHT) - int(FONT_SIZE_2 * 5/2)), (WIDTH, int(HEIGHT) - int(FONT_SIZE_2 * 5/2)),
+                         int(FONT_SIZE_1 / 20))
+
+        chances_left = LETTER_FONT_1.render(f'LIVES | {hangman.chances.get_chances()}', 1, WHITE)
         win.blit(chances_left, (int(FONT_SIZE_1), int(FONT_SIZE_1)))
 
-        word_to_guess = LETTER_FONT_1.render(f"{' '.join(hangman.word_to_guess)}", 1, BLACK)
+        word_to_guess = LETTER_FONT_1.render(f"{' '.join(hangman.word_to_guess)}", 1, WHITE)
         win.blit(word_to_guess, (int(WIDTH / 2) - int(word_to_guess.get_width() / 2),
                                  int(HEIGHT / 2) - int(FONT_SIZE_2)))
 
-        used_letters = LETTER_FONT_1.render(f"Used letters: {', '.join(hangman.used_letters)}", 1, BLACK)
-        win.blit(used_letters, (int(FONT_SIZE_1), int(HEIGHT) - int(FONT_SIZE_2) * 3))
+        aesthetic_word_to_guess = LETTER_FONT_1.render(f"{' '.join(hangman.aesthetic_word_to_guess)}", 1, WHITE)
+        win.blit(aesthetic_word_to_guess, (int(WIDTH / 2) - int(aesthetic_word_to_guess.get_width() / 2),
+                                           int(HEIGHT / 2) - int(FONT_SIZE_2)))
+
+        used_letters_text = LETTER_FONT_1.render('USED LETTERS', 1, WHITE)
+        win.blit(used_letters_text, (int(WIDTH / 2) - int(used_letters_text.get_width() / 2),
+                                     int(HEIGHT) - int(FONT_SIZE_2 * 3) - int(HEIGHT / 100)))
+
+        pygame.draw.rect(win, WHITE,
+                         (int(WIDTH / 2) - int((used_letters_text.get_width() + FONT_SIZE_1) / 2),
+                          int(HEIGHT) - int(FONT_SIZE_2 * 3 + int(FONT_SIZE_1 / 15)),
+                          int(used_letters_text.get_width() + FONT_SIZE_1), int(FONT_SIZE_1)), int(FONT_SIZE_1 / 20))
+
+        used_letters_1 = LETTER_FONT_1.render(f"{' | '.join(hangman.used_letters_row_1)}", 1, WHITE)
+        win.blit(used_letters_1, (int(FONT_SIZE_1 * 3/2), int(HEIGHT) - int(FONT_SIZE_2) * 2))
+
+        used_letters_2 = LETTER_FONT_1.render(f"{' | '.join(hangman.used_letters_row_2)}", 1, WHITE)
+        win.blit(used_letters_2, (int(FONT_SIZE_1 * 3/2), int(HEIGHT) - int(FONT_SIZE_2 * 5/4)))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -170,6 +147,9 @@ def game(chance):
 
         pygame.display.update()
 
+
+def win_loose():
+    pass
 
 main_menu()
 pygame.quit()
