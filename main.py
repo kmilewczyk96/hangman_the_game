@@ -20,7 +20,7 @@ clock = pygame.time.Clock()
 
 # colours and fonts:
 WHITE = (227, 227, 227)
-GREEN_TABLE = (51, 67, 42)
+WHITE_2 = (175, 175, 175)
 BACKGROUND = pygame.image.load("chalkboard.jpg").convert()
 
 FONT_SIZE_0 = round(WIDTH / 40)
@@ -32,13 +32,18 @@ LETTER_FONT_2 = pygame.font.SysFont('monospace', FONT_SIZE_2, bold=False)
 
 
 def quit_prompt():
-    menu = TwoWayMenu('ARE YOU SURE?', 'YES', 'NO', quit, main_menu)
-    menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, LETTER_FONT_2, FONT_SIZE_2, win)
+    menu = TwoWayMenu('< ARE YOU SURE? >', 'YES', 'NO', quit, main_menu)
+    menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
 
 
 def main_menu():
     menu = TwoWayMenu('< H A N G M A N >', 'PLAY', 'QUIT', game_level_menu, quit_prompt)
-    menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, LETTER_FONT_2, FONT_SIZE_2, win)
+    menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
+
+
+def try_again():
+    menu = TwoWayMenu('< TRY AGAIN? >', 'SURE!', 'NO', game, main_menu)
+    menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
 
 
 def game_level_menu():
@@ -50,21 +55,19 @@ def game_level_menu():
         clock.tick(FPS)
         win.blit(BACKGROUND, (0, 0))
 
-        diff_text = LETTER_FONT_2.render('<CHOOSE DIFFICULTY>', 1, WHITE)
+        diff_text = LETTER_FONT_2.render('< CHOOSE DIFFICULTY >', 1, WHITE)
         win.blit(diff_text, (int(WIDTH / 2) - int(diff_text.get_width() / 2),
                              int(FONT_SIZE_2)))
 
         for i in range(max_level_status + 1):
-            lvl_text = LETTER_FONT_2.render(game_level.game_level_list[i].get_name(), 1, WHITE)
+            lvl_text = LETTER_FONT_2.render(game_level.game_level_list[i].get_name(), 1, WHITE_2)
             win.blit(lvl_text, (int(WIDTH / 2) - int(lvl_text.get_width() / 2),
                                 int(FONT_SIZE_2) * (i + 3)))
 
-        lvl2_text = LETTER_FONT_2.render(game_level.game_level_list[level_status].get_name(), 1, WHITE)
-        pygame.draw.line(win, WHITE,
-                         (int(WIDTH / 2) - int(lvl2_text.get_width() / 2),
-                          int(FONT_SIZE_2) * (level_status + 4)),
-                         (int(WIDTH / 2) + int(lvl2_text.get_width() / 2),
-                          int(FONT_SIZE_2) * (level_status + 4)), int(FONT_SIZE_2 / 20))
+        lvl2_text = LETTER_FONT_2.render('[ ' + game_level.game_level_list[level_status].get_name() + ' ]', 1, WHITE)
+        win.blit(lvl2_text, (int(WIDTH / 2) - int(lvl2_text.get_width() / 2),
+                             int(FONT_SIZE_2) * (level_status + 3)))
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -147,9 +150,6 @@ def game(chance):
 
         pygame.display.update()
 
-
-def win_loose():
-    pass
 
 main_menu()
 pygame.quit()
