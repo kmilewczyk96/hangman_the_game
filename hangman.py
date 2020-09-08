@@ -8,8 +8,8 @@ class Hangman:
     def __init__(self, word, chance):
         self.alphabet = [i for i in range(97, 123)]
         self.random_word = word.get_random_word().upper()
-        self.word_to_guess = ['_' for i in self.random_word]
-        self.aesthetic_word_to_guess = ['_' for i in self.random_word]
+        self.word_to_guess = ['_' if i != '-' else '-' for i in self.random_word]
+        self.aesthetic_word_to_guess = ['_' if i != '-' else '-' for i in self.random_word]
         self.used_letters_row_1 = []
         self.used_letters_row_2 = []
         self.capacity = 0
@@ -25,7 +25,8 @@ class Hangman:
                 self.word_to_guess[letter_index] = letter
 
             if '_' not in self.word_to_guess:
-                self.win()
+                self.chances.reset_chances()
+                return 'win'
 
         else:
             try:
@@ -38,10 +39,4 @@ class Hangman:
                         self.used_letters_row_2.append(letter)
 
             except ChancesError:
-                self.loose()
-
-    def win(self):
-        print('win')
-
-    def loose(self):
-        print('lost')
+                return 'loose'

@@ -2,15 +2,17 @@ import pygame
 
 
 class TwoWayMenu:
-    def __init__(self, question, answer_1, answer_2, action_1, action_2):
+    def __init__(self, question, answer_1, answer_2, action_1, action_2, answer_3, action_3):
         self.clock = pygame.time.Clock()
         self.status = 0
         self.run_menu = True
         self.question = question
         self.answer_1 = answer_1
         self.answer_2 = answer_2
+        self.answer_3 = answer_3
         self.action_1 = action_1
         self.action_2 = action_2
+        self.action_3 = action_3
 
     def prompt(self, WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win):
         while self.run_menu:
@@ -21,24 +23,32 @@ class TwoWayMenu:
             question_shadow = LETTER_FONT_2.render(f"{self.question}", 1, WHITE_2)
             answer_1 = LETTER_FONT_2.render(f"{self.answer_1}", 1, WHITE_2)
             answer_2 = LETTER_FONT_2.render(f'{self.answer_2}', 1, WHITE_2)
+            answer_3 = LETTER_FONT_2.render(f'{self.answer_3}', 1, WHITE_2)
 
             win.blit(question_shadow, (int(WIDTH / 2) - int(question_shadow.get_width() / 2),
                                        int(FONT_SIZE_2)))
             win.blit(question, (int(WIDTH / 2) - int(question.get_width() / 2) + 2,
                                 int(FONT_SIZE_2) + 2))
             win.blit(answer_1, (int(WIDTH / 2) - int(answer_1.get_width() / 2),
-                                int(HEIGHT / 2 - FONT_SIZE_2)))
+                                int(HEIGHT / 2 - FONT_SIZE_2 * 3/2)))
             win.blit(answer_2, (int(WIDTH / 2) - int(answer_2.get_width() / 2),
-                                int(HEIGHT / 2 + FONT_SIZE_2 / 2)))
+                                int(HEIGHT / 2)))
+            win.blit(answer_3, (int(WIDTH / 2) - int(answer_3.get_width() / 2),
+                                int(HEIGHT / 2 + FONT_SIZE_2 * 3/2)))
 
             if self.status == 0:
                 answer_1 = LETTER_FONT_2.render(f"[ {self.answer_1} ]", 1, WHITE)
                 win.blit(answer_1, (int(WIDTH / 2) - int(answer_1.get_width() / 2) + 2,
                                     int(HEIGHT / 2 - FONT_SIZE_2) + 2))
 
-            else:
+            elif self.status == 1:
                 answer_2 = LETTER_FONT_2.render(f"[ {self.answer_2} ]", 1, WHITE)
                 win.blit(answer_2, (int(WIDTH / 2) - int(answer_2.get_width() / 2) + 2,
+                                    int(HEIGHT / 2 + FONT_SIZE_2 / 2) + 2))
+
+            else:
+                answer_3 = LETTER_FONT_2.render(f"[ {self.answer_3} ]", 1, WHITE)
+                win.blit(answer_3, (int(WIDTH / 2) - int(answer_2.get_width() / 2) + 2,
                                     int(HEIGHT / 2 + FONT_SIZE_2 / 2) + 2))
 
             for event in pygame.event.get():
@@ -47,13 +57,13 @@ class TwoWayMenu:
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_DOWN:
-                        if self.status == 0:
-                            self.status = 1
+                        if self.status < 2:
+                            self.status += 1
                         print(self.status)
 
                     if event.key == pygame.K_UP:
-                        if self.status == 1:
-                            self.status = 0
+                        if self.status > 0:
+                            self.status -= 1
                         print(self.status)
 
                     if event.key == pygame.K_RETURN:
@@ -62,6 +72,9 @@ class TwoWayMenu:
                             self.run_menu = False
                         if self.status == 1:
                             self.action_2()
+                            self.run_menu = False
+                        if self.status == 2:
+                            self.action_3()
                             self.run_menu = False
 
             pygame.display.update()

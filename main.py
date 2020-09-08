@@ -41,11 +41,6 @@ def main_menu():
     menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
 
 
-def try_again():
-    menu = TwoWayMenu('< TRY AGAIN? >', 'SURE!', 'NO', game, main_menu)
-    menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
-
-
 def game_level_menu():
     game_level = GameLevel(Chance)
     level_status = 0
@@ -55,9 +50,12 @@ def game_level_menu():
         clock.tick(FPS)
         win.blit(BACKGROUND, (0, 0))
 
-        diff_text = LETTER_FONT_2.render('< CHOOSE DIFFICULTY >', 1, WHITE)
-        win.blit(diff_text, (int(WIDTH / 2) - int(diff_text.get_width() / 2),
-                             int(FONT_SIZE_2)))
+        header_shadow = LETTER_FONT_2.render('< CHOOSE DIFFICULTY >', 1, WHITE_2)
+        header_text = LETTER_FONT_2.render('< CHOOSE DIFFICULTY >', 1, WHITE)
+        win.blit(header_shadow, (int(WIDTH / 2) - int(header_shadow.get_width() / 2),
+                                 int(FONT_SIZE_2)))
+        win.blit(header_text, (int(WIDTH / 2) - int(header_text.get_width() / 2) + 2,
+                               int(FONT_SIZE_2) + 2))
 
         for i in range(max_level_status + 1):
             lvl_text = LETTER_FONT_2.render(game_level.game_level_list[i].get_name(), 1, WHITE_2)
@@ -65,9 +63,8 @@ def game_level_menu():
                                 int(FONT_SIZE_2) * (i + 3)))
 
         lvl2_text = LETTER_FONT_2.render('[ ' + game_level.game_level_list[level_status].get_name() + ' ]', 1, WHITE)
-        win.blit(lvl2_text, (int(WIDTH / 2) - int(lvl2_text.get_width() / 2),
-                             int(FONT_SIZE_2) * (level_status + 3)))
-
+        win.blit(lvl2_text, (int(WIDTH / 2) - int(lvl2_text.get_width() / 2) + 2,
+                             int(FONT_SIZE_2) * (level_status + 3) + 2))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -145,8 +142,13 @@ def game(chance):
 
                 if event.key in hangman.alphabet:
                     letter = pygame.key.name(event.key).upper()
-                    hangman.check(letter)
-                    print(letter)
+                    result = hangman.check(letter)
+                    if result == 'win':
+                        game(chance)
+                        run_game = False
+                    if result == 'loose':
+                        main_menu()
+                        run_game = False
 
         pygame.display.update()
 
