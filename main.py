@@ -1,12 +1,13 @@
 import pygame
 from chance import Chance
 from difficulty.game_level import GameLevel
+from streak import Streak
 from word.words import WordsFromFile
 from hangman import Hangman
 from menus.two_way_menu import TwoWayMenu
+from menus.three_way_menu import ThreeWayMenu
 
 pygame.init()
-
 
 # keep this aspect ratio (16:9 / 16:10), with max resolution of 1920 x 1080
 WIDTH, HEIGHT = (1920, 1080)
@@ -37,12 +38,13 @@ def quit_prompt():
 
 
 def main_menu():
-    menu = TwoWayMenu('< H A N G M A N >', 'PLAY', 'QUIT', game_level_menu, quit_prompt)
+    menu = ThreeWayMenu('< H A N G M A N >', 'PLAY', 'HI SCORES', 'QUIT', game_level_menu, game_level_menu, quit_prompt)
     menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
 
 
 def game_level_menu():
     game_level = GameLevel(Chance)
+    current_streak = Streak
     level_status = 0
     max_level_status = game_level.game_level_count - 1
     run_game_level = True
@@ -107,6 +109,9 @@ def game(chance):
 
         chances_left = LETTER_FONT_1.render(f'LIVES | {hangman.chances.get_chances()}', 1, WHITE)
         win.blit(chances_left, (int(FONT_SIZE_1), int(FONT_SIZE_1)))
+
+        current_streak = LETTER_FONT_1.render(f'fail | STREAK', 1, WHITE)
+        win.blit(current_streak, (WIDTH - int(current_streak.get_width()) - int(FONT_SIZE_1), int(FONT_SIZE_1)))
 
         word_to_guess = LETTER_FONT_1.render(f"{' '.join(hangman.word_to_guess)}", 1, WHITE)
         win.blit(word_to_guess, (int(WIDTH / 2) - int(word_to_guess.get_width() / 2),

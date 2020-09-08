@@ -1,7 +1,4 @@
-import pygame
-from chance import Chance, ChancesError
-from difficulty.game_level import GameLevel
-from word.words import WordsFromFile
+from chance import ChancesError
 
 
 class Hangman:
