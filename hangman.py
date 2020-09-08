@@ -2,7 +2,7 @@ from chance import ChancesError
 
 
 class Hangman:
-    def __init__(self, word, chance):
+    def __init__(self, word, chance, streak):
         self.alphabet = [i for i in range(97, 123)]
         self.random_word = word.get_random_word().upper()
         self.word_to_guess = ['_' if i != '-' else '-' for i in self.random_word]
@@ -11,6 +11,7 @@ class Hangman:
         self.used_letters_row_2 = []
         self.capacity = 0
         self.chances = chance
+        self.streak = streak
 
     def check(self, letter):
         if letter in self.random_word:
@@ -22,6 +23,7 @@ class Hangman:
                 self.word_to_guess[letter_index] = letter
 
             if '_' not in self.word_to_guess:
+                self.streak.increase_streak()
                 self.chances.reset_chances()
                 return 'win'
 

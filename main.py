@@ -44,7 +44,7 @@ def main_menu():
 
 def game_level_menu():
     game_level = GameLevel(Chance)
-    current_streak = Streak
+    streak = Streak()
     level_status = 0
     max_level_status = game_level.game_level_count - 1
     run_game_level = True
@@ -89,15 +89,16 @@ def game_level_menu():
 
                 if event.key == pygame.K_RETURN:
                     chance = game_level.get_level_chances(level_status)
-                    game(chance)
+                    print(f'streak: {streak, type(streak)}')
+                    game(chance, streak)
                     run_game_level = False
 
         pygame.display.update()
 
 
-def game(chance):
+def game(chance, streak):
     word = WordsFromFile()
-    hangman = Hangman(word, chance)
+    hangman = Hangman(word, chance, streak)
     run_game = True
     while run_game:
         clock.tick(FPS)
@@ -110,7 +111,7 @@ def game(chance):
         chances_left = LETTER_FONT_1.render(f'LIVES | {hangman.chances.get_chances()}', 1, WHITE)
         win.blit(chances_left, (int(FONT_SIZE_1), int(FONT_SIZE_1)))
 
-        current_streak = LETTER_FONT_1.render(f'fail | STREAK', 1, WHITE)
+        current_streak = LETTER_FONT_1.render(f'{streak.get_streak()} | STREAK', 1, WHITE)
         win.blit(current_streak, (WIDTH - int(current_streak.get_width()) - int(FONT_SIZE_1), int(FONT_SIZE_1)))
 
         word_to_guess = LETTER_FONT_1.render(f"{' '.join(hangman.word_to_guess)}", 1, WHITE)
@@ -149,7 +150,7 @@ def game(chance):
                     letter = pygame.key.name(event.key).upper()
                     result = hangman.check(letter)
                     if result == 'win':
-                        game(chance)
+                        game(chance, streak)
                         run_game = False
                     if result == 'loose':
                         main_menu()
