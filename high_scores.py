@@ -16,9 +16,3 @@ class HighScores:
                 high_score = file.readline().strip('\n')
                 self.high_scores_list.append(high_score)
         return self.high_scores_list
-
-
-# if __name__ == '__main__':
-#     score = HighScores()
-#     for i in range(score.high_scores_count):
-#         print(score.get_scores()[i])

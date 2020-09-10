@@ -62,7 +62,6 @@ class TwoWayMenu:
                             self.run_menu = False
                         if self.status == 1:
                             if self.action_2() is not None:
-                                print('im still here')
                                 return 'go_back'
                             self.run_menu = False
 

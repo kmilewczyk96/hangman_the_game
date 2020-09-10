@@ -2,6 +2,8 @@ import pygame
 from chance import Chance
 from difficulty.game_level import GameLevel
 from high_scores import HighScores
+from name_provider import NameProvider
+from score import Score
 from streak import Streak
 from word.words import WordsFromFile
 from hangman import Hangman
@@ -12,6 +14,7 @@ pygame.init()
 
 # keep this aspect ratio (16:9 / 16:10), with max resolution of 1920 x 1080
 WIDTH, HEIGHT = (1280, 720)
+# win = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
 win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.mouse.set_visible(False)
 pygame.display.set_caption('H A N _ _ A N')
@@ -54,7 +57,7 @@ def in_game_prompt():
 
 
 def game_level_menu():
-    game_level = GameLevel(Chance)
+    game_level = GameLevel(Chance, Score)
     streak = Streak()
     level_status = 0
     max_level_status = game_level.game_level_count - 1
@@ -100,15 +103,16 @@ def game_level_menu():
 
                 if event.key == pygame.K_RETURN:
                     chance = game_level.get_level_chances(level_status)
-                    game(chance, streak)
+                    multiplier = game_level.get_level_multiplier(level_status)
+                    game(chance, streak, multiplier)
                     run_game_level = False
 
         pygame.display.update()
 
 
-def game(chance, streak):
+def game(chance, streak, multiplier):
     word = WordsFromFile()
-    hangman = Hangman(word, chance, streak)
+    hangman = Hangman(word, chance, streak, multiplier)
     run_game = True
     while run_game:
         clock.tick(FPS)
@@ -160,11 +164,56 @@ def game(chance, streak):
                     letter = pygame.key.name(event.key).upper()
                     result = hangman.check(letter)
                     if result == 'win':
-                        game(chance, streak)
+                        game(chance, streak, multiplier)
                         run_game = False
                     if result == 'loose':
                         high_scores_table()
                         run_game = False
+
+        pygame.display.update()
+
+
+def type_your_name():
+    name = NameProvider()
+    run_name = True
+    while run_name:
+        clock.tick(FPS)
+        win.blit(BACKGROUND, (0, 0))
+
+        header_shadow = LETTER_FONT_2.render('< ENTER YOUR NAME >', 1, WHITE_2)
+        header_text = LETTER_FONT_2.render('< ENTER YOUR NAME >', 1, WHITE)
+        win.blit(header_shadow, (int(WIDTH / 2) - int(header_shadow.get_width() / 2),
+                                 int(FONT_SIZE_2)))
+        win.blit(header_text, (int(WIDTH / 2) - int(header_text.get_width() / 2) + 2,
+                               int(FONT_SIZE_2) + 2))
+
+        aesthetic_type_name = LETTER_FONT_2.render(f"{' '.join(name.aesthetic_name)}", 1, WHITE)
+        win.blit(aesthetic_type_name, (int(WIDTH / 2) - int(aesthetic_type_name.get_width() / 2),
+                                       int(HEIGHT / 2) - int(FONT_SIZE_2)))
+
+        type_name = LETTER_FONT_2.render(f"{' '.join(name.name)}", 1, WHITE)
+        win.blit(type_name, (int(WIDTH / 2) - int(type_name.get_width() / 2),
+                             int(HEIGHT / 2) - int(FONT_SIZE_2)))
+
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run_name = False
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    quit()
+
+                if event.key == pygame.K_BACKSPACE:
+                    name.delete_letter()
+
+                if event.key in name.alphabet:
+                    letter = pygame.key.name(event.key).upper()
+                    name.add_letter(letter)
+
+                if event.key == pygame.K_RETURN:
+                    if name.get_name() is not None:
+                        run_name = False
 
         pygame.display.update()
 
@@ -182,6 +231,14 @@ def high_scores_table():
                                  int(FONT_SIZE_2)))
         win.blit(header_text, (int(WIDTH / 2) - int(header_text.get_width() / 2) + 2,
                                int(FONT_SIZE_2) + 2))
+
+        for i in range(score_board.high_scores_count):
+            score_shadow = LETTER_FONT_2.render(score_board.get_scores()[i], 1, WHITE_2)
+            score_text = LETTER_FONT_2.render(score_board.get_scores()[i], 1, WHITE)
+            win.blit(score_shadow, (int(WIDTH / 2) - int(score_shadow.get_width() / 2),
+                                int((FONT_SIZE_2) * (i + 9/4))))
+            win.blit(score_text, (int(WIDTH / 2) - int(score_text.get_width() / 2) + 2,
+                                  int((FONT_SIZE_2) * (i + 9 / 4)) + 2))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
