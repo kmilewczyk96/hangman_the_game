@@ -61,7 +61,9 @@ class TwoWayMenu:
                             self.action_1()
                             self.run_menu = False
                         if self.status == 1:
-                            self.action_2()
+                            if self.action_2() is not None:
+                                print('im still here')
+                                return 'go_back'
                             self.run_menu = False
 
             pygame.display.update()

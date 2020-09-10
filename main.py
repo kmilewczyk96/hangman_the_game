@@ -1,6 +1,7 @@
 import pygame
 from chance import Chance
 from difficulty.game_level import GameLevel
+from high_scores import HighScores
 from streak import Streak
 from word.words import WordsFromFile
 from hangman import Hangman
@@ -10,8 +11,8 @@ from menus.three_way_menu import ThreeWayMenu
 pygame.init()
 
 # keep this aspect ratio (16:9 / 16:10), with max resolution of 1920 x 1080
-WIDTH, HEIGHT = (1920, 1080)
-win = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
+WIDTH, HEIGHT = (1280, 720)
+win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.mouse.set_visible(False)
 pygame.display.set_caption('H A N _ _ A N')
 
@@ -32,14 +33,24 @@ LETTER_FONT_1 = pygame.font.SysFont('monospace', FONT_SIZE_1, bold=False)
 LETTER_FONT_2 = pygame.font.SysFont('monospace', FONT_SIZE_2, bold=False)
 
 
+def go_back():
+    return 'go_back'
+
+
+def main_menu():
+    menu = ThreeWayMenu('< H A N G M A N >', 'PLAY', 'HI SCORES', 'QUIT',
+                        game_level_menu, high_scores_table, quit_prompt)
+    menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
+
+
 def quit_prompt():
     menu = TwoWayMenu('< ARE YOU SURE? >', 'YES', 'NO', quit, main_menu)
     menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
 
 
-def main_menu():
-    menu = ThreeWayMenu('< H A N G M A N >', 'PLAY', 'HI SCORES', 'QUIT', game_level_menu, game_level_menu, quit_prompt)
-    menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
+def in_game_prompt():
+    menu = TwoWayMenu('< YOU WILL LOOSE! >', 'OK', 'GO BACK', high_scores_table, go_back)
+    return menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
 
 
 def game_level_menu():
@@ -89,7 +100,6 @@ def game_level_menu():
 
                 if event.key == pygame.K_RETURN:
                     chance = game_level.get_level_chances(level_status)
-                    print(f'streak: {streak, type(streak)}')
                     game(chance, streak)
                     run_game_level = False
 
@@ -143,8 +153,8 @@ def game(chance, streak):
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    main_menu()
-                    run_game = False
+                    if in_game_prompt() != 'go_back':
+                        run_game = False
 
                 if event.key in hangman.alphabet:
                     letter = pygame.key.name(event.key).upper()
@@ -153,8 +163,34 @@ def game(chance, streak):
                         game(chance, streak)
                         run_game = False
                     if result == 'loose':
-                        main_menu()
+                        high_scores_table()
                         run_game = False
+
+        pygame.display.update()
+
+
+def high_scores_table():
+    score_board = HighScores()
+    run_board = True
+    while run_board:
+        clock.tick(FPS)
+        win.blit(BACKGROUND, (0, 0))
+
+        header_shadow = LETTER_FONT_2.render('< HI SCORES >', 1, WHITE_2)
+        header_text = LETTER_FONT_2.render('< HI SCORES >', 1, WHITE)
+        win.blit(header_shadow, (int(WIDTH / 2) - int(header_shadow.get_width() / 2),
+                                 int(FONT_SIZE_2)))
+        win.blit(header_text, (int(WIDTH / 2) - int(header_text.get_width() / 2) + 2,
+                               int(FONT_SIZE_2) + 2))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run_board = False
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    main_menu()
+                    run_board = False
 
         pygame.display.update()
 

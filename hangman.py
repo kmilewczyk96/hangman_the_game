@@ -28,14 +28,13 @@ class Hangman:
                 return 'win'
 
         else:
-            try:
-                if letter not in self.used_letters_row_1 and letter not in self.used_letters_row_2:
+            if letter not in self.used_letters_row_1 and letter not in self.used_letters_row_2:
+                if self.capacity < 11:
+                    self.used_letters_row_1.append(letter)
+                    self.capacity += 1
+                else:
+                    self.used_letters_row_2.append(letter)
+                try:
                     self.chances.decrease_chances()
-                    if self.capacity < 11:
-                        self.used_letters_row_1.append(letter)
-                        self.capacity += 1
-                    else:
-                        self.used_letters_row_2.append(letter)
-
-            except ChancesError:
-                return 'loose'
+                except ChancesError:
+                    return 'loose'
