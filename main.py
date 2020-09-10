@@ -36,6 +36,10 @@ LETTER_FONT_1 = pygame.font.SysFont('monospace', FONT_SIZE_1, bold=False)
 LETTER_FONT_2 = pygame.font.SysFont('monospace', FONT_SIZE_2, bold=False)
 
 
+def pass_func():
+    pass
+
+
 def go_back():
     return 'go_back'
 
@@ -52,7 +56,7 @@ def quit_prompt():
 
 
 def in_game_prompt():
-    menu = TwoWayMenu('< YOU WILL LOOSE! >', 'OK', 'GO BACK', high_scores_table, go_back)
+    menu = TwoWayMenu('< YOU WILL LOOSE! >', 'OK', 'GO BACK', pass_func, go_back)
     return menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
 
 
@@ -125,8 +129,11 @@ def game(chance, streak, multiplier):
         chances_left = LETTER_FONT_1.render(f'LIVES | {hangman.chances.get_chances()}', 1, WHITE)
         win.blit(chances_left, (int(FONT_SIZE_1), int(FONT_SIZE_1)))
 
+        current_score = LETTER_FONT_1.render(f'{hangman.score} |  SCORE', 1, WHITE)
+        win.blit(current_score, (WIDTH - int(current_score.get_width()) - int(FONT_SIZE_1), int(FONT_SIZE_1)))
+
         current_streak = LETTER_FONT_1.render(f'{streak.get_streak()} | STREAK', 1, WHITE)
-        win.blit(current_streak, (WIDTH - int(current_streak.get_width()) - int(FONT_SIZE_1), int(FONT_SIZE_1)))
+        win.blit(current_streak, (WIDTH - int(current_streak.get_width()) - int(FONT_SIZE_1), int(FONT_SIZE_1) * 2))
 
         word_to_guess = LETTER_FONT_1.render(f"{' '.join(hangman.word_to_guess)}", 1, WHITE)
         win.blit(word_to_guess, (int(WIDTH / 2) - int(word_to_guess.get_width() / 2),
@@ -158,6 +165,7 @@ def game(chance, streak, multiplier):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     if in_game_prompt() != 'go_back':
+                        high_scores_table(hangman.score)
                         run_game = False
 
                 if event.key in hangman.alphabet:
@@ -167,7 +175,8 @@ def game(chance, streak, multiplier):
                         game(chance, streak, multiplier)
                         run_game = False
                     if result == 'loose':
-                        high_scores_table()
+                        score = hangman.score
+                        high_scores_table(score)
                         run_game = False
 
         pygame.display.update()
@@ -201,9 +210,6 @@ def type_your_name():
                 run_name = False
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    quit()
-
                 if event.key == pygame.K_BACKSPACE:
                     name.delete_letter()
 
@@ -218,8 +224,13 @@ def type_your_name():
         pygame.display.update()
 
 
-def high_scores_table():
+def high_scores_table(score=0):
+    print(score)
     score_board = HighScores()
+    if score != 0:
+        if score_board.check_score(score) is not None:
+            type_your_name()
+
     run_board = True
     while run_board:
         clock.tick(FPS)

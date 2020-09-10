@@ -13,6 +13,7 @@ class Hangman:
         self.chances = chance
         self.streak = streak
         self.multiplier = multiplier
+        self.score = self.streak.get_streak() * self.multiplier.get_multiplier()
 
     def check(self, letter):
         if letter in self.random_word:
@@ -38,6 +39,4 @@ class Hangman:
                 try:
                     self.chances.decrease_chances()
                 except ChancesError:
-                    hi_score = self.streak.get_streak() * self.multiplier.get_multiplier()
-                    print(hi_score)
                     return 'loose'
