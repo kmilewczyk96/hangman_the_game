@@ -13,9 +13,10 @@ from menus.three_way_menu import ThreeWayMenu
 pygame.init()
 
 # keep this aspect ratio (16:9 / 16:10), with max resolution of 1920 x 1080
-WIDTH, HEIGHT = (1280, 720)
-# win = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
-win = pygame.display.set_mode((WIDTH, HEIGHT))
+WIDTH, HEIGHT = (1920, 1080)
+win = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
+# WIDTH, HEIGHT = (1280, 720)
+# win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.mouse.set_visible(False)
 pygame.display.set_caption('H A N _ _ A N')
 
@@ -175,15 +176,14 @@ def game(chance, streak, multiplier):
                         game(chance, streak, multiplier)
                         run_game = False
                     if result == 'loose':
-                        score = hangman.score
-                        high_scores_table(score)
+                        high_scores_table(hangman.score)
                         run_game = False
 
         pygame.display.update()
 
 
 def type_your_name():
-    name = NameProvider()
+    name_provider = NameProvider()
     run_name = True
     while run_name:
         clock.tick(FPS)
@@ -196,11 +196,11 @@ def type_your_name():
         win.blit(header_text, (int(WIDTH / 2) - int(header_text.get_width() / 2) + 2,
                                int(FONT_SIZE_2) + 2))
 
-        aesthetic_type_name = LETTER_FONT_2.render(f"{' '.join(name.aesthetic_name)}", 1, WHITE)
+        aesthetic_type_name = LETTER_FONT_2.render(f"{' '.join(name_provider.aesthetic_name)}", 1, WHITE)
         win.blit(aesthetic_type_name, (int(WIDTH / 2) - int(aesthetic_type_name.get_width() / 2),
                                        int(HEIGHT / 2) - int(FONT_SIZE_2)))
 
-        type_name = LETTER_FONT_2.render(f"{' '.join(name.name)}", 1, WHITE)
+        type_name = LETTER_FONT_2.render(f"{' '.join(name_provider.name)}", 1, WHITE)
         win.blit(type_name, (int(WIDTH / 2) - int(type_name.get_width() / 2),
                              int(HEIGHT / 2) - int(FONT_SIZE_2)))
 
@@ -211,15 +211,16 @@ def type_your_name():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
-                    name.delete_letter()
+                    name_provider.delete_letter()
 
-                if event.key in name.alphabet:
+                if event.key in name_provider.alphabet:
                     letter = pygame.key.name(event.key).upper()
-                    name.add_letter(letter)
+                    name_provider.add_letter(letter)
 
                 if event.key == pygame.K_RETURN:
-                    if name.get_name() is not None:
-                        run_name = False
+                    name = name_provider.get_name()
+                    if name is not None:
+                        return name
 
         pygame.display.update()
 
@@ -228,8 +229,12 @@ def high_scores_table(score=0):
     print(score)
     score_board = HighScores()
     if score != 0:
-        if score_board.check_score(score) is not None:
-            type_your_name()
+        position = score_board.check_score(score)
+        if position is not None:
+            name = type_your_name()
+            score_board.update_score(name, score, position)
+
+    high_scores_list = score_board.get_scores()
 
     run_board = True
     while run_board:
@@ -243,9 +248,9 @@ def high_scores_table(score=0):
         win.blit(header_text, (int(WIDTH / 2) - int(header_text.get_width() / 2) + 2,
                                int(FONT_SIZE_2) + 2))
 
-        for i in range(score_board.high_scores_count):
-            score_shadow = LETTER_FONT_2.render(score_board.get_scores()[i], 1, WHITE_2)
-            score_text = LETTER_FONT_2.render(score_board.get_scores()[i], 1, WHITE)
+        for i in range(0, score_board.high_scores_count):
+            score_shadow = LETTER_FONT_2.render(high_scores_list[i], 1, WHITE_2)
+            score_text = LETTER_FONT_2.render(high_scores_list[i], 1, WHITE)
             win.blit(score_shadow, (int(WIDTH / 2) - int(score_shadow.get_width() / 2),
                                 int((FONT_SIZE_2) * (i + 9/4))))
             win.blit(score_text, (int(WIDTH / 2) - int(score_text.get_width() / 2) + 2,

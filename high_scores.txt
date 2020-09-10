@@ -1,5 +1,5 @@
-BOT | 5255
-BOT |  400
-BOT |  300
-BOT |  200
-BOT |  100
+DEF |  500
+DEF |  400
+DEF |  300
+DEF |  200
+DEF |  100
