@@ -1,20 +1,22 @@
 import pygame
 from chance import Chance
 from difficulty.game_level import GameLevel
+from global_style import GlobalStyle
 from high_scores import HighScores
+from menus.new_menu import NewMenu
 from name_provider import NameProvider
 from score import Score
 from streak import Streak
 from word.words import WordsFromFile
 from hangman import Hangman
-from menus.two_way_menu import TwoWayMenu
-from menus.three_way_menu import ThreeWayMenu
+
 
 pygame.init()
+style = GlobalStyle()
 
 # keep this aspect ratio (16:9 / 16:10), with max resolution of 1920 x 1080
-WIDTH, HEIGHT = (1920, 1080)
-win = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
+WIDTH, HEIGHT = (style.width, style.height)
+win = style.win
 pygame.mouse.set_visible(False)
 pygame.display.set_caption('H A N _ _ A N')
 
@@ -23,16 +25,16 @@ FPS = 60
 clock = pygame.time.Clock()
 
 # colours and fonts:
-WHITE = (227, 227, 227)
-WHITE_2 = (175, 175, 175)
-BACKGROUND = pygame.image.load("chalkboard.jpg").convert()
+WHITE = style.WHITE
+GREY = style.GREY
+BACKGROUND = style.BACKGROUND
 
-FONT_SIZE_0 = round(WIDTH / 40)
-FONT_SIZE_1 = round(WIDTH / 28)
-FONT_SIZE_2 = round(WIDTH / 15)
-LETTER_FONT_0 = pygame.font.SysFont('monospace', FONT_SIZE_0, bold=False)
-LETTER_FONT_1 = pygame.font.SysFont('monospace', FONT_SIZE_1, bold=False)
-LETTER_FONT_2 = pygame.font.SysFont('monospace', FONT_SIZE_2, bold=False)
+FONT_SIZE_0 = style.FONT_SIZE_0
+FONT_SIZE_1 = style.FONT_SIZE_1
+FONT_SIZE_2 = style.FONT_SIZE_2
+LETTER_FONT_0 = style.FONT_SIZE_0
+LETTER_FONT_1 = style.FONT_SIZE_1
+LETTER_FONT_2 = style.FONT_SIZE_2
 
 
 def pass_func():
@@ -44,19 +46,31 @@ def go_back():
 
 
 def main_menu():
-    menu = ThreeWayMenu('< H A N G M A N >', 'PLAY', 'HI SCORES', 'QUIT',
-                        game_level_menu, high_scores_table, quit_prompt)
-    menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
+    option = {
+        "[ PLAY ]": game_level_menu,
+        "[ HI SCORES ]": high_scores_table,
+        "[ QUIT ]": quit_prompt
+    }
+    menu = NewMenu('< H A N G M A N >', option)
+    menu.draw_menu()
 
 
 def quit_prompt():
-    menu = TwoWayMenu('< ARE YOU SURE? >', 'YES', 'NO', quit, main_menu)
-    menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
+    option = {
+        "[ YES ]": quit,
+        "[ NO ]": main_menu
+    }
+    menu = NewMenu('< ARE YOU SURE?>', option)
+    menu.draw_menu()
 
 
 def in_game_prompt():
-    menu = TwoWayMenu('< YOU WILL LOOSE! >', 'OK', 'GO BACK', pass_func, go_back)
-    return menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
+    option = {
+        "[ YES ]": high_scores_table,
+        "[ NO ]": main_menu
+    }
+    menu = NewMenu('< YOU WILL LOOSE >', option)
+    menu.draw_menu()
 
 
 def game_level_menu():
@@ -69,7 +83,7 @@ def game_level_menu():
         clock.tick(FPS)
         win.blit(BACKGROUND, (0, 0))
 
-        header_shadow = LETTER_FONT_2.render('< CHOOSE DIFFICULTY >', 1, WHITE_2)
+        header_shadow = LETTER_FONT_2.render('< CHOOSE DIFFICULTY >', 1, GREY)
         header_text = LETTER_FONT_2.render('< CHOOSE DIFFICULTY >', 1, WHITE)
         win.blit(header_shadow, (int(WIDTH / 2) - int(header_shadow.get_width() / 2),
                                  int(FONT_SIZE_2)))
@@ -77,7 +91,7 @@ def game_level_menu():
                                int(FONT_SIZE_2) + 2))
 
         for i in range(max_level_status + 1):
-            lvl_text = LETTER_FONT_2.render(game_level.game_level_list[i].get_name(), 1, WHITE_2)
+            lvl_text = LETTER_FONT_2.render(game_level.game_level_list[i].get_name(), 1, GREY)
             win.blit(lvl_text, (int(WIDTH / 2) - int(lvl_text.get_width() / 2),
                                 int(FONT_SIZE_2) * (i + 3)))
 
@@ -187,7 +201,7 @@ def type_your_name():
         clock.tick(FPS)
         win.blit(BACKGROUND, (0, 0))
 
-        header_shadow = LETTER_FONT_2.render('< ENTER YOUR NAME >', 1, WHITE_2)
+        header_shadow = LETTER_FONT_2.render('< ENTER YOUR NAME >', 1, GREY)
         header_text = LETTER_FONT_2.render('< ENTER YOUR NAME >', 1, WHITE)
         win.blit(header_shadow, (int(WIDTH / 2) - int(header_shadow.get_width() / 2),
                                  int(FONT_SIZE_2)))
@@ -239,7 +253,7 @@ def high_scores_table(score=0):
         clock.tick(FPS)
         win.blit(BACKGROUND, (0, 0))
 
-        header_shadow = LETTER_FONT_2.render('< HI SCORES >', 1, WHITE_2)
+        header_shadow = LETTER_FONT_2.render('< HI SCORES >', 1, GREY)
         header_text = LETTER_FONT_2.render('< HI SCORES >', 1, WHITE)
         win.blit(header_shadow, (int(WIDTH / 2) - int(header_shadow.get_width() / 2),
                                  int(FONT_SIZE_2)))
@@ -247,7 +261,7 @@ def high_scores_table(score=0):
                                int(FONT_SIZE_2) + 2))
 
         for i in range(0, score_board.high_scores_count):
-            score_shadow = LETTER_FONT_2.render(high_scores_list[i], 1, WHITE_2)
+            score_shadow = LETTER_FONT_2.render(high_scores_list[i], 1, GREY)
             score_text = LETTER_FONT_2.render(high_scores_list[i], 1, WHITE)
             win.blit(score_shadow, (int(WIDTH / 2) - int(score_shadow.get_width() / 2),
                                 int((FONT_SIZE_2) * (i + 9/4))))
