@@ -15,8 +15,6 @@ pygame.init()
 # keep this aspect ratio (16:9 / 16:10), with max resolution of 1920 x 1080
 WIDTH, HEIGHT = (1920, 1080)
 win = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
-# WIDTH, HEIGHT = (1280, 720)
-# win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.mouse.set_visible(False)
 pygame.display.set_caption('H A N _ _ A N')
 

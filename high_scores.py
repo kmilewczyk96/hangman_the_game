@@ -32,11 +32,6 @@ class HighScores:
                 if i < 5:
                     file.write(score_list[i - 1] + '\n')
         self.high_scores_list = []
-        with open(f'{self.get_path()}/high_scores.txt', 'r') as file:
-            for i in range(1, self.high_scores_count + 1):
-                high_score = file.readline().strip('\n')
-                self.high_scores_list.append(high_score)
-        return self.high_scores_list
 
     def check_score(self, score):
         with open(f'{self.get_path()}/high_scores.txt', 'r') as file:
@@ -47,8 +42,6 @@ class HighScores:
                     return i
 
 
-
-#
 if __name__ == '__main__':
     default = HighScores()
     default.update_score('DEF', 500, 1)
