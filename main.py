@@ -2,6 +2,7 @@ import pygame
 from chance import Chance
 from difficulty.game_level import GameLevel
 from high_scores import HighScores
+from menus.new_menu import NewMenu
 from name_provider import NameProvider
 from score import Score
 from streak import Streak
@@ -44,19 +45,31 @@ def go_back():
 
 
 def main_menu():
-    menu = ThreeWayMenu('< H A N G M A N >', 'PLAY', 'HI SCORES', 'QUIT',
-                        game_level_menu, high_scores_table, quit_prompt)
-    menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
+    options = {
+        "PLAY": game_level_menu,
+        "HI SCORES": high_scores_table,
+        "QUIT": quit_prompt
+    }
+    menu = NewMenu('< H A N G M A N >', options)
+    menu.draw_menu(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
 
 
 def quit_prompt():
-    menu = TwoWayMenu('< ARE YOU SURE? >', 'YES', 'NO', quit, main_menu)
-    menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
+    options = {
+        "YES": quit,
+        "NO": main_menu
+    }
+    menu = NewMenu('< ARE YOU SURE?>', options)
+    menu.draw_menu(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
 
 
 def in_game_prompt():
-    menu = TwoWayMenu('< YOU WILL LOOSE! >', 'OK', 'GO BACK', pass_func, go_back)
-    return menu.prompt(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
+    options = {
+        "YES": pass_func,
+        "NO": go_back
+    }
+    menu = NewMenu('< YOU WILL LOOSE! >', options)
+    return menu.draw_menu(WIDTH, HEIGHT, BACKGROUND, WHITE, WHITE_2, LETTER_FONT_2, FONT_SIZE_2, win)
 
 
 def game_level_menu():
